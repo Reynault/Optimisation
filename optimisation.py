@@ -1,31 +1,18 @@
 """
 https://sourcemaking.com/design_patterns/composite/python/1
 """
-'''
+
 class BranchAndBound(object):
     """
     Classe modelisant un algo de B&B
     """
-    def __init__(self, borneSup, valHeurestique, depth=0,neud = 0):
+    def __init__(self, pbactuel)
         super(BranchAndBound, self).__init__()
-        self.depth = depth
-        self.neud = neud
-        self.borneSup = borneSup
-        self.valHeurestique = valHeurestique
+        self.pbactuel = pbactuel
 
-    def eval(self):
-
-        pass
-
-class Etat(object):
-    """
-    Classe Etat
-    """
-    def __init__(self, coutTotal, solution):
-        super(Etat, self).__init__()
-        self.coutTotal = coutTotal
-        self.z = solution.evaluateZ()
-        '''
+    def evaluer(self):
+        
+        
 
 class PL(object):
     """
