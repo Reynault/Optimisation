@@ -2,7 +2,6 @@
 
 class PL{
     - valMax : int
-    - params : dict(Param, int)
     + PL(int valMax, List(Param))
     + reset()
     + evaluateZ()
@@ -23,18 +22,21 @@ class Param{
 }
  
 class BranchAndBound{
-    {static} - solutionActuelle : PL
-    - solution : racine
+    - borneSup : float
     + evaluer()
-    + affichageArbre()
 }
 
 class Solution{
-    - probleme : PL
-    - solutions : List(Solution)
     - solution(PL)
     + evaluer()
-    + affichage()
 }
+
+PL  --> "*" Param : - parametres
+
+BranchAndBound --> "*" Solution : - solutions
+BranchAndBound --> "1" PL : - pbactuel
+
+Solution --> "1" PL : - probleme
+Solution --> "*" Solution : - solutions
 
 @enduml

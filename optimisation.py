@@ -14,7 +14,7 @@ class BranchAndBound(object):
         # Meilleure solution actuelle contenue dans le problème
         # qui a été évalué avec la troisième heuristique
         pbactuel = pbactuel
-        self.meilleure = pbactuel
+        self.borneSup = pbactuel.evaluateZ()
 
     """
         Méthode évaluer qui permet d'évaluer le problème en appliquant l'algorithme
@@ -24,7 +24,7 @@ class BranchAndBound(object):
         # On vérifie si le problème a une solution
         
         # Evaluation du problème avec la création de deux première solutions
-        print("oui")
+        print(self.borneSup)
 
 
 """
