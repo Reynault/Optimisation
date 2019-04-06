@@ -11,7 +11,7 @@ class BranchAndBound(object):
 
     pbactuel = None
     nbnoeuds = 0
-    
+
     """
         Constructeur qui prend un problème en paramètre
     """
@@ -36,12 +36,12 @@ class BranchAndBound(object):
             for self.borneSup.param in self.borneSup.params:
                 parametres.append(self.borneSup.param)
             # création du problème de gauche
-            pb = PL(self.borneSup.valMax - (reelle.cout), parametres)
+            pb = PL(self.borneSup.valMax, parametres)
             pb.enleverParametre(reelle)
             solGauche = Solution(pb)
             solGauche.evaluer(self.borneSup)
             # création du problème de droite
-            pb = PL(self.borneSup.valMax, parametres)
+            pb = PL(self.borneSup.valMax- (reelle.cout), parametres)
             pb.enleverParametre(reelle)
             soldroite = Solution(pb)
             soldroite.evaluer(self.borneSup)
@@ -75,12 +75,12 @@ class Solution(object):
                     for self.probleme.param in self.probleme.params:
                         parametres.append(self.probleme.param)
                     # création du problème de gauche
-                    pb = PL(self.probleme.valMax - (reelle.cout), parametres)
+                    pb = PL(self.probleme.valMax, parametres)
                     pb.enleverParametre(reelle)
                     solGauche = Solution(pb)
                     solGauche.evaluer(borneSup)
                     # création du problème de droite
-                    pb = PL(self.probleme.valMax, parametres)
+                    pb = PL(self.probleme.valMax - (reelle.cout), parametres)
                     pb.enleverParametre(reelle)
                     soldroite = Solution(pb)
                     soldroite.evaluer(borneSup)
@@ -127,8 +127,8 @@ class PL(object):
             # Si on trouve une variable réelle, on la retourne
             if round(self.params[param]) != self.params[param]:
                 return resultat
-        return None    
-            
+        return None
+
     """
         Méthode qui permet de récupérer la durée totale
     """
@@ -159,7 +159,7 @@ class PL(object):
         for p in result:
             string += str(p.nom + " ")
         return string
-    
+
     """
         Méthode qui permet de récupérer l'ordre des variables en fonction de la deuxième heuristique
     """
@@ -235,17 +235,36 @@ class PL(object):
             resulttemp.append(param)
         result = sorted(resulttemp, key=lambda param:
                         (param.cout / param.duree))
-        i = -1
-        while i < len(self.params):
-            i += 1
+
+        for i in range(len(self.params)):
             self.params[result[i]] = 1
             if (self.coutZ() > self.valMax):
                 self.params[result[i]] = 0
+                self.params[result[i]] = ((self.valMax - self.coutZ()) /
+                                          float(result[i].cout))
+                if (self.params[result[i]] < 0):
+                    self.params[result[i]] = 0
                 break
+        print(self.params)
 
-        if (i < len(self.params)):
-            self.params[result[i]] = ((self.valMax - self.coutZ()) /
-                                      float(result[i].cout))
+
+        """
+                i = 0
+                while i < len(self.params):
+                    self.params[result[i]] = 1
+                    if (self.coutZ() > self.valMax):
+                        self.params[result[i]] = 0
+                        i += 1
+                        break
+                    i += 1
+
+                if (i < len(self.params)):
+                    self.params[result[i]] = ((self.valMax - self.coutZ()) /
+                                              float(result[i].cout))
+                    if (self.coutZ() > self.valMax or self.params[result[i]] < 0):
+                        self.params[result[i]] = 0
+        """
+
     """
         Méthode toString pour afficher les informations du problème linéaire
     """
@@ -290,8 +309,8 @@ def main():
     affichageHeuristiques(plineaire)
     # Affichage du branch and bound
     applicationBranchAndBound(plineaire)
-    
-    
+
+
 
 """
     Méthode d'application de branch and bound sur le problème relaxé
@@ -311,7 +330,7 @@ def affichageHeuristiques(plineaire):
     plineaire.evaluateZ_Heurestique1()
     print(plineaire)
     plineaire.reset()
-    
+
     print("Heuristique 2 \n")
     print("Ordre : " + plineaire.affiche_heurestique2())
     plineaire.evaluateZ_Heurestique2()
@@ -323,6 +342,6 @@ def affichageHeuristiques(plineaire):
     plineaire.evaluateZ_Heurestique3()
     print(plineaire)
 
-    
+
 if __name__ == '__main__':
     main()
