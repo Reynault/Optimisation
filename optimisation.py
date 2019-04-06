@@ -2,47 +2,111 @@
 https://sourcemaking.com/design_patterns/composite/python/1
 """
 
+import time
+
 """
 Classe modelisant un algo de B&B
 """
 class BranchAndBound(object):
+
+    pbactuel = None
+    nbnoeuds = 0
+    
     """
         Constructeur qui prend un problème en paramètre
     """
     def __init__(self, pbactuel):
         super(BranchAndBound, self).__init__()
-        # Meilleure solution actuelle contenue dans le problème
-        # qui a été évalué avec la troisième heuristique
-        pbactuel = pbactuel
-        self.borneSup = pbactuel.evaluateZ()
+        self.borneSup = pbactuel
 
     """
-        Méthode évaluer qui permet d'évaluer le problème en appliquant
-        l'algorithme
+        Méthode évaluer qui permet d'évaluer le problème en appliquant l'algorithme
         de branch and bound
     """
     def evaluer(self):
-        # On vérifie si le problème a une solution
+        debut = time.time()
+        # Description du noeud
+        print("Noeud racine :")
+        print("Borne superieure : " + str(self.borneSup.evaluateZ()))
+        print("Solution relaxée : \n\n" + str(self.borneSup) + "\n\n")
+        # On trouve la variable réelle
+        reelle = self.borneSup.getVariableReelle()
+        if reelle != None :
+            parametres = []
+            for self.borneSup.param in self.borneSup.params:
+                parametres.append(self.borneSup.param)
+            # création du problème de gauche
+            pb = PL(self.borneSup.valMax - (reelle.cout), parametres)
+            pb.setParam( reelle, 1)
+            solGauche = Solution(pb)
+            solGauche.evaluer(self.borneSup)
+            # création du problème de droite
+            pb = PL(self.borneSup.valMax, parametres)
+            pb.setParam( reelle, 0)
+            soldroite = Solution(pb)
+            soldroite.evaluer(self.borneSup)
+        fin = time.time()
+        print("Fin du branch and bound")
+        print("Nombre de noeuds : " + str(BranchAndBound.nbnoeuds))
+        print("Temps de calcul : " + str(fin - debut))
+        print("Solution optimale : \n\n" + str(BranchAndBound.pbactuel))
 
-        # Evaluation du problème avec la création de deux première solutions
-        print(self.borneSup)
+class Solution(object):
+    def __init__(self, probleme):
+        self.probleme = probleme
+        self.probleme.evaluateZ()
 
+    def evaluer(self, borneSup):
+        BranchAndBound.nbnoeuds += 1
+        # Description du noeud
+        print("Noeud courant : " + str(BranchAndBound.nbnoeuds))
+        print("Borne superieure : " + str(borneSup.evaluateZ()))
+        print("Solution relaxée : \n\n" + str(self.probleme) + "\n\n")
+        # Vérification de la satisfaction de la contrainte
+        if self.probleme.coutZ() <= 1000 :
+            # Comparaison entre la valeur actuelle et la valeur du noeud courant
+            if BranchAndBound.pbactuel == None or BranchAndBound.pbactuel.evaluateZ() < self.probleme.evaluateZ() :
+                # Récupération de la variable réelle
+                reelle = self.probleme.getVariableReelle()
+                print(reelle)
+                if reelle != None :
+                    # Si il y a une valeur réelle, séparation en deux sous problème
+                    parametres = []
+                    for self.probleme.param in self.probleme.params:
+                        parametres.append(self.probleme.param)
+                    # création du problème de gauche
+                    pb = PL(self.probleme.valMax - (reelle.cout), parametres)
+                    pb.setParam( reelle, 1)
+                    solGauche = Solution(pb)
+                    solGauche.evaluer(borneSup)
+                    # création du problème de droite
+                    pb = PL(self.probleme.valMax, parametres)
+                    pb.setParam( reelle, 0)
+                    soldroite = Solution(pb)
+                    soldroite.evaluer(borneSup)
+                else:
+                    print("Meilleure solution trouvee : " + str(self.probleme))
+                    BranchAndBound.pbactuel = self.probleme
+        else:
+            print("Coupe du noeud : non respect de la contrainte")
 
 """
 Classe modelisant un probleme de programation lineaire
 """
 class PL(object):
     """
-        Constructeur qui prend l'ensemble des paramètres et la valeur max
-        correspondant à la contrainte
+        Constructeur qui prend l'ensemble des paramètres et la valeur max correspondant à la contrainte
         (1000 pour le problème)
     """
-    def __init__(self, valMax, *params):
+    def __init__(self, valMax, params):
         super(PL, self).__init__()
         self.params = dict()
         self.valMax = valMax
         for param in params:
             self.params.update({param: 0})
+
+    def setParam(self, param, value):
+        self.params[param] = value
 
     """
         Méthode qui remet les variables à zero
@@ -51,6 +115,17 @@ class PL(object):
         for param in self.params:
             self.params[param] = 0
 
+    def getVariableReelle(self):
+        """
+            Méthode qui permet de récupérer la variable réelle du problème
+        """
+        for param in self.params:
+            resultat = param
+            # Si on trouve une variable réelle, on la retourne
+            if round(self.params[param]) != self.params[param]:
+                return resultat
+        return None    
+            
     """
         Méthode qui permet de récupérer la durée totale
     """
@@ -70,8 +145,7 @@ class PL(object):
         return result
 
     """
-        Méthode qui permet de récupérer l'ordre des variables en fonction de
-        la première heuristique
+        Méthode qui permet de récupérer l'ordre des variables en fonction de la première heuristique
     """
     def affiche_heurestique1(self):
         resulttemp = []
@@ -82,10 +156,9 @@ class PL(object):
         for p in result:
             string += str(p.nom + " ")
         return string
-
+    
     """
-        Méthode qui permet de récupérer l'ordre des variables en fonction de
-        la deuxième heuristique
+        Méthode qui permet de récupérer l'ordre des variables en fonction de la deuxième heuristique
     """
     def affiche_heurestique2(self):
         resulttemp = []
@@ -98,8 +171,7 @@ class PL(object):
         return string
 
     """
-        Méthode qui permet de récupérer l'ordre des variables en fonction de
-        la troisième heuristique
+        Méthode qui permet de récupérer l'ordre des variables en fonction de la troisième heuristique
     """
     def affiche_heurestique3(self):
         resulttemp = []
@@ -203,18 +275,20 @@ class Param(object):
 """
 def main():
     # Initialisation du problème linéaire
-    p1 = Param("x1", 9, 450)
-    p2 = Param("x2", 2, 700)
-    p3 = Param("x3", 3, 350)
-    p4 = Param("x4", 13, 500)
-    p5 = Param("x5", 6, 450)
-    p6 = Param("x6", 5, 100)
-    plineaire = PL(1000, p1, p2, p3, p4, p5, p6)
+    parametres = []
+    parametres.append(Param("x1", 9, 450))
+    parametres.append(Param("x2", 2, 700))
+    parametres.append(Param("x3", 3, 350))
+    parametres.append(Param("x4", 13, 500))
+    parametres.append(Param("x5", 6, 450))
+    parametres.append(Param("x6", 5, 100))
+    plineaire = PL(1000, parametres)
     # Affichage des réponses Questions 2 et 3
     affichageHeuristiques(plineaire)
     # Affichage du branch and bound
     applicationBranchAndBound(plineaire)
-
+    
+    
 
 """
     Méthode d'application de branch and bound sur le problème relaxé
@@ -226,8 +300,7 @@ def applicationBranchAndBound(plineaire):
     branch.evaluer()
 
 """
-    Méthode d'affichage des résultats du problème relaxé avec les trois
-    heuristiques
+    Méthode d'affichage des résultats du problème relaxé avec les trois heuristiques
 """
 def affichageHeuristiques(plineaire):
     print("Heuristique 1 \n")
@@ -235,7 +308,7 @@ def affichageHeuristiques(plineaire):
     plineaire.evaluateZ_Heurestique1()
     print(plineaire)
     plineaire.reset()
-
+    
     print("Heuristique 2 \n")
     print("Ordre : " + plineaire.affiche_heurestique2())
     plineaire.evaluateZ_Heurestique2()
@@ -247,6 +320,6 @@ def affichageHeuristiques(plineaire):
     plineaire.evaluateZ_Heurestique3()
     print(plineaire)
 
-
+    
 if __name__ == '__main__':
     main()
