@@ -1,0 +1,40 @@
+@startuml
+
+class PL{
+    - valMax : int
+    - params : dict(Param, int)
+    + PL(int valMax, List(Param))
+    + reset()
+    + evaluateZ()
+    + coutZ()
+    + affiche_heuristique1()
+    + affiche_heuristique2()
+    + affiche_heuristique3()
+    + evaluateZ_Heurestique1()
+    + evaluateZ_Heurestique2()
+    + evaluateZ_Heurestique3()
+}
+
+class Param{
+    - nom : String
+    - duree : int
+    - cout : int
+    + Param ( String nom, int duree, int cout)
+}
+ 
+class BranchAndBound{
+    {static} - solutionActuelle : PL
+    - solution : racine
+    + evaluer()
+    + affichageArbre()
+}
+
+class Solution{
+    - probleme : PL
+    - solutions : List(Solution)
+    - solution(PL)
+    + evaluer()
+    + affichage()
+}
+
+@enduml
