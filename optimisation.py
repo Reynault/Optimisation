@@ -17,12 +17,13 @@ class BranchAndBound(object):
         self.meilleure = pbactuel
 
     """
-        Méthode évaluer qui permet d'évaluer le problème en appliquant l'algorithme
+        Méthode évaluer qui permet d'évaluer le problème en appliquant
+        l'algorithme
         de branch and bound
     """
     def evaluer(self):
         # On vérifie si le problème a une solution
-        
+
         # Evaluation du problème avec la création de deux première solutions
         print("oui")
 
@@ -32,7 +33,8 @@ Classe modelisant un probleme de programation lineaire
 """
 class PL(object):
     """
-        Constructeur qui prend l'ensemble des paramètres et la valeur max correspondant à la contrainte
+        Constructeur qui prend l'ensemble des paramètres et la valeur max
+        correspondant à la contrainte
         (1000 pour le problème)
     """
     def __init__(self, valMax, *params):
@@ -48,7 +50,7 @@ class PL(object):
     def reset(self):
         for param in self.params:
             self.params[param] = 0
-            
+
     """
         Méthode qui permet de récupérer la durée totale
     """
@@ -68,7 +70,8 @@ class PL(object):
         return result
 
     """
-        Méthode qui permet de récupérer l'ordre des variables en fonction de la première heuristique
+        Méthode qui permet de récupérer l'ordre des variables en fonction de
+        la première heuristique
     """
     def affiche_heurestique1(self):
         resulttemp = []
@@ -79,9 +82,10 @@ class PL(object):
         for p in result:
             string += str(p.nom + " ")
         return string
-    
+
     """
-        Méthode qui permet de récupérer l'ordre des variables en fonction de la deuxième heuristique
+        Méthode qui permet de récupérer l'ordre des variables en fonction de
+        la deuxième heuristique
     """
     def affiche_heurestique2(self):
         resulttemp = []
@@ -94,7 +98,8 @@ class PL(object):
         return string
 
     """
-        Méthode qui permet de récupérer l'ordre des variables en fonction de la troisième heuristique
+        Méthode qui permet de récupérer l'ordre des variables en fonction de
+        la troisième heuristique
     """
     def affiche_heurestique3(self):
         resulttemp = []
@@ -209,8 +214,7 @@ def main():
     affichageHeuristiques(plineaire)
     # Affichage du branch and bound
     applicationBranchAndBound(plineaire)
-    
-    
+
 
 """
     Méthode d'application de branch and bound sur le problème relaxé
@@ -222,7 +226,8 @@ def applicationBranchAndBound(plineaire):
     branch.evaluer()
 
 """
-    Méthode d'affichage des résultats du problème relaxé avec les trois heuristiques
+    Méthode d'affichage des résultats du problème relaxé avec les trois
+    heuristiques
 """
 def affichageHeuristiques(plineaire):
     print("Heuristique 1 \n")
@@ -230,7 +235,7 @@ def affichageHeuristiques(plineaire):
     plineaire.evaluateZ_Heurestique1()
     print(plineaire)
     plineaire.reset()
-    
+
     print("Heuristique 2 \n")
     print("Ordre : " + plineaire.affiche_heurestique2())
     plineaire.evaluateZ_Heurestique2()
@@ -242,6 +247,6 @@ def affichageHeuristiques(plineaire):
     plineaire.evaluateZ_Heurestique3()
     print(plineaire)
 
-    
+
 if __name__ == '__main__':
     main()
