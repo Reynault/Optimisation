@@ -37,12 +37,12 @@ class BranchAndBound(object):
                 parametres.append(self.borneSup.param)
             # création du problème de gauche
             pb = PL(self.borneSup.valMax - (reelle.cout), parametres)
-            pb.setParam( reelle, 1)
+            pb.enleverParametre(reelle)
             solGauche = Solution(pb)
             solGauche.evaluer(self.borneSup)
             # création du problème de droite
             pb = PL(self.borneSup.valMax, parametres)
-            pb.setParam( reelle, 0)
+            pb.enleverParametre(reelle)
             soldroite = Solution(pb)
             soldroite.evaluer(self.borneSup)
         fin = time.time()
@@ -54,7 +54,7 @@ class BranchAndBound(object):
 class Solution(object):
     def __init__(self, probleme):
         self.probleme = probleme
-        self.probleme.evaluateZ()
+        self.probleme.evaluateZ_Heurestique3()
 
     def evaluer(self, borneSup):
         BranchAndBound.nbnoeuds += 1
@@ -76,12 +76,12 @@ class Solution(object):
                         parametres.append(self.probleme.param)
                     # création du problème de gauche
                     pb = PL(self.probleme.valMax - (reelle.cout), parametres)
-                    pb.setParam( reelle, 1)
+                    pb.enleverParametre(reelle)
                     solGauche = Solution(pb)
                     solGauche.evaluer(borneSup)
                     # création du problème de droite
                     pb = PL(self.probleme.valMax, parametres)
-                    pb.setParam( reelle, 0)
+                    pb.enleverParametre(reelle)
                     soldroite = Solution(pb)
                     soldroite.evaluer(borneSup)
                 else:
@@ -105,8 +105,11 @@ class PL(object):
         for param in params:
             self.params.update({param: 0})
 
-    def setParam(self, param, value):
-        self.params[param] = value
+    """
+        Méthode qui permet d'enlever un paramètre au problème linéaire
+    """
+    def enleverParametre(self, param):
+        self.params.pop(param)
 
     """
         Méthode qui remet les variables à zero
