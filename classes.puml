@@ -2,7 +2,9 @@
 
 class PL{
     - valMax : int
-    + PL(int valMax, List(Param))
+    + PL(int valMax, List(Param) params)
+    + getVariableReelle() : Param
+    + enleverParametre(Param param, float value)
     + reset()
     + evaluateZ()
     + coutZ()
@@ -22,19 +24,21 @@ class Param{
 }
  
 class BranchAndBound{
-    - borneSup : float
+    + {static} nbnoeuds = 0
     + evaluer()
 }
 
 class Solution{
-    - solution(PL)
+    - solution(PL pl)
     + evaluer()
 }
 
 PL  --> "*" Param : - parametres
+PL --> "*" Param : - buffer
 
 BranchAndBound --> "*" Solution : - solutions
 BranchAndBound --> "1" PL : - pbactuel
+BranchAndBound --> "1" PL : - borneSup
 
 Solution --> "1" PL : - probleme
 Solution --> "*" Solution : - solutions
