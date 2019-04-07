@@ -36,13 +36,13 @@ class BranchAndBound(object):
             for self.borneSup.param in self.borneSup.params:
                 parametres.append(self.borneSup.param)
             # création du problème de gauche
-            pb = PL(self.borneSup.valMax, parametres)
-            pb.enleverParametre(reelle)
+            pb = PL(self.borneSup.valMax, parametres, self.borneSup.buffer.copy())
+            pb.enleverParametre(reelle, 0)
             solGauche = Solution(pb)
             solGauche.evaluer(self.borneSup)
             # création du problème de droite
-            pb = PL(self.borneSup.valMax- (reelle.cout), parametres)
-            pb.enleverParametre(reelle)
+            pb = PL(self.borneSup.valMax- (reelle.cout), parametres, self.borneSup.buffer.copy())
+            pb.enleverParametre(reelle, 1)
             soldroite = Solution(pb)
             soldroite.evaluer(self.borneSup)
         fin = time.time()
@@ -68,24 +68,22 @@ class Solution(object):
             if BranchAndBound.pbactuel == None or BranchAndBound.pbactuel.evaluateZ() < self.probleme.evaluateZ() :
                 # Récupération de la variable réelle
                 reelle = self.probleme.getVariableReelle()
-                print(reelle)
                 if reelle != None :
                     # Si il y a une valeur réelle, séparation en deux sous problème
                     parametres = []
                     for self.probleme.param in self.probleme.params:
                         parametres.append(self.probleme.param)
                     # création du problème de gauche
-                    pb = PL(self.probleme.valMax, parametres)
-                    pb.enleverParametre(reelle)
+                    pb = PL(self.probleme.valMax, parametres, self.probleme.buffer.copy())
+                    pb.enleverParametre(reelle, 0)
                     solGauche = Solution(pb)
                     solGauche.evaluer(borneSup)
                     # création du problème de droite
-                    pb = PL(self.probleme.valMax - (reelle.cout), parametres)
-                    pb.enleverParametre(reelle)
+                    pb = PL(self.probleme.valMax - (reelle.cout), parametres, self.probleme.buffer.copy())
+                    pb.enleverParametre(reelle, 1)
                     soldroite = Solution(pb)
                     soldroite.evaluer(borneSup)
                 else:
-                    print("Meilleure solution trouvee : " + str(self.probleme))
                     BranchAndBound.pbactuel = self.probleme
         else:
             print("Coupe du noeud : non respect de la contrainte")
@@ -98,9 +96,10 @@ class PL(object):
         Constructeur qui prend l'ensemble des paramètres et la valeur max correspondant à la contrainte
         (1000 pour le problème)
     """
-    def __init__(self, valMax, params):
+    def __init__(self, valMax, params, buffer):
         super(PL, self).__init__()
         self.params = dict()
+        self.buffer = buffer
         self.valMax = valMax
         for param in params:
             self.params.update({param: 0})
@@ -108,8 +107,9 @@ class PL(object):
     """
         Méthode qui permet d'enlever un paramètre au problème linéaire
     """
-    def enleverParametre(self, param):
+    def enleverParametre(self, param, value):
         self.params.pop(param)
+        self.buffer.update({param: value})
 
     """
         Méthode qui remet les variables à zero
@@ -245,7 +245,7 @@ class PL(object):
                 if (self.params[result[i]] < 0):
                     self.params[result[i]] = 0
                 break
-        print(self.params)
+        #print(self.params)
 
 
         """
@@ -271,6 +271,8 @@ class PL(object):
     def __str__(self):
         string = "Valeurs : \n\n"
         for param, coef in self.params.items():
+            string += str(param.nom) + " = " + str(coef) + "\n"
+        for param, coef in self.buffer.items():
             string += str(param.nom) + " = " + str(coef) + "\n"
         string += "\nDuree de la solution = " + str(self.evaluateZ()) + "\n"
         string += "Cout de la solution = " + str(self.coutZ()) + "\n"
@@ -304,7 +306,8 @@ def main():
     parametres.append(Param("x4", 13, 500))
     parametres.append(Param("x5", 6, 450))
     parametres.append(Param("x6", 5, 100))
-    plineaire = PL(1000, parametres)
+    buffer = dict()
+    plineaire = PL(1000, parametres, buffer)
     # Affichage des réponses Questions 2 et 3
     affichageHeuristiques(plineaire)
     # Affichage du branch and bound
