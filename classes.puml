@@ -36,11 +36,9 @@ class Solution{
 PL  --> "*" Param : - parametres
 PL --> "*" Param : - buffer
 
-BranchAndBound --> "*" Solution : - solutions
 BranchAndBound --> "1" PL : - pbactuel
 BranchAndBound --> "1" PL : - borneSup
 
 Solution --> "1" PL : - probleme
-Solution --> "*" Solution : - solutions
 
 @enduml
