@@ -23,9 +23,19 @@ Paul cherche à maximiser le nombre d’heures de sport auxquelles il peut assis
 
 ## Implémentation proposée
 
+### Contenu
+
 Pour répondre au problème, nous avons fourni une application Java proposant une interface indiquant :
 
 * L’ordre initial et la solution de la relaxation 
 * La solution et la valeur de l’objectifQ4.  
 * Le  nombre  de  nœuds  explorés  par  l’ordre  de  B&B, le  temps  de  calcul,  la solution  optimale. 
 * Puis pour chaque nœud,la valeur de la borne supérieure, et la solution relaxée. 
+
+### Exécution du projet
+
+Pour exécuter le projet, il faut :
+  * Récupérer l'interpréteur Python disponible sur le site : https://www.python.org/
+  * Pour exécuter le programme, il faut : 
+    * Ouvrir le fichier optimisation.py avec IDLE (clique droit, ouvrir avec IDLE)
+    * Sur la fenêtre, appuyer sur F5 (une console s'affichera, contenant le résultat de l'application)
