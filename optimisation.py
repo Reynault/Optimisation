@@ -37,13 +37,13 @@ class BranchAndBound(object):
             for self.borneSup.param in self.borneSup.params:
                 parametres.append(self.borneSup.param)
             # création du problème de gauche
-            pb = PL(self.borneSup.valMax, parametres, self.borneSup.buffer.copy())
-            pb.enleverParametre(reelle, 0)
+            pb = PL(self.borneSup.valMax- (reelle.cout), parametres, self.borneSup.buffer.copy())
+            pb.enleverParametre(reelle, 1)
             solGauche = Solution(pb)
             solGauche.evaluer(self.borneSup)
             # création du problème de droite
-            pb = PL(self.borneSup.valMax- (reelle.cout), parametres, self.borneSup.buffer.copy())
-            pb.enleverParametre(reelle, 1)
+            pb = PL(self.borneSup.valMax, parametres, self.borneSup.buffer.copy())
+            pb.enleverParametre(reelle, 0)
             soldroite = Solution(pb)
             soldroite.evaluer(self.borneSup)
         fin = time.time()
@@ -75,13 +75,13 @@ class Solution(object):
                     for self.probleme.param in self.probleme.params:
                         parametres.append(self.probleme.param)
                     # création du problème de gauche
-                    pb = PL(self.probleme.valMax, parametres, self.probleme.buffer.copy())
-                    pb.enleverParametre(reelle, 0)
+                    pb = PL(self.probleme.valMax - (reelle.cout), parametres, self.probleme.buffer.copy())
+                    pb.enleverParametre(reelle, 1)
                     solGauche = Solution(pb)
                     solGauche.evaluer(borneSup)
                     # création du problème de droite
-                    pb = PL(self.probleme.valMax - (reelle.cout), parametres, self.probleme.buffer.copy())
-                    pb.enleverParametre(reelle, 1)
+                    pb = PL(self.probleme.valMax, parametres, self.probleme.buffer.copy())
+                    pb.enleverParametre(reelle, 0)
                     soldroite = Solution(pb)
                     soldroite.evaluer(borneSup)
                 else:
@@ -138,6 +138,8 @@ class PL(object):
     def evaluateZ(self):
         result = 0
         for param, coef in self.params.items():
+            result = result + (param.duree * coef)
+        for param, coef in self.buffer.items():
             result = result + (param.duree * coef)
         return result
 
@@ -248,25 +250,6 @@ class PL(object):
                 if (self.params[result[i]] < 0):
                     self.params[result[i]] = 0
                 break
-        #print(self.params)
-
-
-        """
-                i = 0
-                while i < len(self.params):
-                    self.params[result[i]] = 1
-                    if (self.coutZ() > self.valMax):
-                        self.params[result[i]] = 0
-                        i += 1
-                        break
-                    i += 1
-
-                if (i < len(self.params)):
-                    self.params[result[i]] = ((self.valMax - self.coutZ()) /
-                                              float(result[i].cout))
-                    if (self.coutZ() > self.valMax or self.params[result[i]] < 0):
-                        self.params[result[i]] = 0
-        """
 
     """
         Méthode toString pour afficher les informations du problème linéaire

@@ -25,7 +25,8 @@ Paul cherche à maximiser le nombre d’heures de sport auxquelles il peut assis
 
 ### Contenu
 
-Pour répondre au problème, nous avons fourni une application Java proposant une interface indiquant :
+Pour répondre au problème, nous avons fourni un script en Python 
+permettant de récupérer les informations suivantes :
 
 * L’ordre initial et la solution de la relaxation 
 * La solution et la valeur de l’objectifQ4.  
