@@ -25,8 +25,9 @@ class BranchAndBound(object):
     """
     def evaluer(self):
         debut = time.time()
+        BranchAndBound.nbnoeuds += 1
         # Description du noeud
-        print("Noeud racine :")
+        print("Noeud racine : " + str(BranchAndBound.nbnoeuds))
         print("Borne superieure : " + str(self.borneSup.evaluateZ()))
         print("Solution relaxée : \n\n" + str(self.borneSup) + "\n\n")
         # On trouve la variable réelle
@@ -48,7 +49,7 @@ class BranchAndBound(object):
         fin = time.time()
         print("Fin du branch and bound")
         print("Nombre de noeuds : " + str(BranchAndBound.nbnoeuds))
-        print("Temps de calcul : " + str(fin - debut))
+        print("Temps de calcul : " + str(round((fin - debut)*1000, 2)) + " ms")
         print("Solution optimale : \n\n" + str(BranchAndBound.pbactuel))
 
 class Solution(object):
@@ -63,7 +64,7 @@ class Solution(object):
         print("Borne superieure : " + str(borneSup.evaluateZ()))
         print("Solution relaxée : \n\n" + str(self.probleme) + "\n\n")
         # Vérification de la satisfaction de la contrainte
-        if self.probleme.coutZ() <= 1000 :
+        if self.probleme.coutZ() <= self.probleme.valMax :
             # Comparaison entre la valeur actuelle et la valeur du noeud courant
             if BranchAndBound.pbactuel == None or BranchAndBound.pbactuel.evaluateZ() < self.probleme.evaluateZ() :
                 # Récupération de la variable réelle
@@ -85,6 +86,8 @@ class Solution(object):
                     soldroite.evaluer(borneSup)
                 else:
                     BranchAndBound.pbactuel = self.probleme
+            else:
+                print("Coupe du noeud : solution moins optimale\n")
         else:
             print("Coupe du noeud : non respect de la contrainte")
 
